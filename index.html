@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayEase - Professional Bill Payment Service</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="container">
+            <a href="#" class="logo">PayEase</a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="home" class="hero">
+        <div class="container">
+            <h1>Pay Your Bills <span class="highlight">Any Way You Want</span></h1>
+            <p>Send us your money through Bank, Crypto, or any payment method you prefer. We'll pay your bills and send you the receipt.</p>
+            <a href="#contact" class="cta-button">Pay My Bills Now</a>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose PayEase?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">💳</div>
+                    <h3>Multiple Payment Methods</h3>
+                    <p>Pay with Bank Transfer, Crypto, Mobile Money, or any method you prefer</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Processing</h3>
+                    <p>Bills are paid within 24 hours of receiving your payment</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>100% Secure</h3>
+                    <p>Your information is protected with bank-level security</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📄</div>
+                    <h3>Instant Receipts</h3>
+                    <p>Get digital receipts and payment confirmations immediately</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title">Our Services</h2>
+            <p class="section-subtitle">We handle all your essential utility payments</p>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Electric Bills</h3>
+                    <p>All major electricity providers accepted. Quick processing and instant confirmation.</p>
+                </div>
+                <div class="service-card">
+                    <div class="feature-icon">💧</div>
+                    <h3>Water Bills</h3>
+                    <p>Municipal and private water service payments handled efficiently and securely.</p>
+                </div>
+                <div class="service-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Internet Bills</h3>
+                    <p>All ISP payments including fiber, cable, and wireless internet services.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-subtitle">Simple 3-step process to get your bills paid</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Submit Bill Details</h3>
+                    <p>Fill out the simple form with your bill information and choose your preferred payment method</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Send Payment</h3>
+                    <p>Transfer the total amount (bill + service fee) using Bank, Crypto, or any method you prefer</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Get Receipt</h3>
+                    <p>We pay your bill within 24 hours and send you the official receipt</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2 class="section-title">Transparent Pricing</h2>
+            <p class="section-subtitle">No hidden fees, just simple service charges</p>
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <h3>Electric Bills</h3>
+                    <div class="feature-icon">⚡</div>
+                    <p><strong>Service Fee: ₺150.00</strong></p>
+                    <p>+ Bill Amount</p>
+                </div>
+                <div class="pricing-card">
+                    <h3>Water Bills</h3>
+                    <div class="feature-icon">💧</div>
+                    <p><strong>Service Fee: ₺150.00</strong></p>
+                    <p>+ Bill Amount</p>
+                </div>
+                <div class="pricing-card">
+                    <h3>Internet Bills</h3>
+                    <div class="feature-icon">🌐</div>
+                    <p><strong>Service Fee: ₺150.00</strong></p>
+                    <p>+ Bill Amount</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title">Pay Your Bills Now</h2>
+            <p class="section-subtitle">Fill out this simple form and we'll handle the rest</p>
+            <form class="contact-form" id="billPaymentForm">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="fullName">Your Name *</label>
+                        <input type="text" id="fullName" name="fullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email *</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="billType">Bill Type *</label>
+                        <select id="billType" name="billType" required>
+                            <option value="">Select Bill Type</option>
+                            <option value="electric">⚡ Electric Bill</option>
+                            <option value="water">💧 Water Bill</option>
+                            <option value="internet">🌐 Internet Bill</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="billAmount">Bill Amount (₺) *</label>
+                        <input type="number" id="billAmount" name="billAmount" step="0.01" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="provider">Service Provider *</label>
+                    <input type="text" id="provider" name="provider" placeholder="e.g., City Electric Company, Fiber Internet Inc." required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="accountNumber">Account Number *</label>
+                    <input type="text" id="accountNumber" name="accountNumber" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="dueDate">Due Date *</label>
+                        <input type="date" id="dueDate" name="dueDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="paymentMethod">Your Payment Method *</label>
+                        <select id="paymentMethod" name="paymentMethod" required>
+                            <option value="">How will you pay us?</option>
+                            <option value="bank">🏦 Bank Transfer</option>
+                            <option value="crypto">₿ Cryptocurrency</option>
+                            <option value="mobile">📱 Mobile Money</option>
+                            <option value="other">💳 Other</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="total-display" id="totalDisplay">
+                    <div class="total-breakdown">
+                        <span>Bill Amount: ₺<span id="billAmountDisplay">0.00</span></span>
+                        <span>Service Fee: ₺<span id="serviceFeeDisplay">150.00</span></span>
+                        <span class="total-amount">Total to Pay: ₺<span id="totalAmountDisplay">150.00</span></span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="submit-btn">Submit Bill Payment Request</button>
+            </form>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 PayEase. All rights reserved. | Secure Bill Payment Service</p>
+            <p>Contact: navinjulius@gmail.com | Phone: +90 533 841 30 66</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
