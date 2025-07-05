@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayEase Admin Panel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .main-content {
+            padding: 2rem 0;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .requests-section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #5a6fd8;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        .requests-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .requests-table th,
+        .requests-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .requests-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-processing {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-completed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-failed {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 10px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 500;
+            color: #555;
+        }
+
+        .filter-group select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .requests-table {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">PayEase Admin</div>
+                <div class="user-info">
+                    <span>Welcome, Admin</span>
+                    <button class="btn btn-primary" onclick="logout()">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRequests">-</div>
+                    <div class="stat-label">Total Requests</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingRequests">-</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="processingRequests">-</div>
+                    <div class="stat-label">Processing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedRequests">-</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+
+            <div class="requests-section">
+                <div class="section-header">
+                    <h2 class="section-title">Payment Requests</h2>
+                    <button class="refresh-btn" onclick="loadRequests()">
+                        <span id="refreshIcon">🔄</span> Refresh
+                    </button>
+                </div>
+
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter" onchange="filterRequests()">
+                            <option value="">All Statuses</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="billTypeFilter">Bill Type:</label>
+                        <select id="billTypeFilter" onchange="filterRequests()">
+                            <option value="">All Types</option>
+                            <option value="electric">Electric</option>
+                            <option value="water">Water</option>
+                            <option value="internet">Internet</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="requests-table">
+                        <thead>
+                            <tr>
+                                <th>Request ID</th>
+                                <th>Customer</th>
+                                <th>Bill Type</th>
+                                <th>Provider</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                                <th>Created</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="requestsTableBody">
+                            <tr>
+                                <td colspan="8" class="loading">Loading requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Update Status Modal -->
+    <div id="updateStatusModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Request Status</h3>
+                <button class="close-modal" onclick="closeModal('updateStatusModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="updateStatusForm">
+                    <input type="hidden" id="requestId" name="requestId">
+                    
+                    <div class="form-group">
+                        <label for="newStatus">New Status:</label>
+                        <select id="newStatus" name="newStatus" required>
+                            <option value="">Select Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="processing">Processing</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="receiptUrl">Receipt URL (optional):</label>
+                        <input type="url" id="receiptUrl" name="receiptUrl" placeholder="https://example.com/receipt.pdf">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="notes">Notes (optional):</label>
+                        <textarea id="notes" name="notes" placeholder="Additional notes about this update..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="updateRequestStatus()">Update Status</button>
+                <button class="btn" onclick="closeModal('updateStatusModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- View Details Modal -->
+    <div id="viewDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request Details</h3>
+                <button class="close-modal" onclick="closeModal('viewDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="requestDetailsBody">
+                <!-- Details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('viewDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = window.location.origin;
+        let allRequests = [];
+        let filteredRequests = [];
+
+        // Load requests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRequests();
+            // Auto-refresh every 30 seconds
+            setInterval(loadRequests, 30000);
+        });
+
+        // Load all requests from API
+        async function loadRequests() {
+            try {
+                const refreshIcon = document.getElementById('refreshIcon');
+                refreshIcon.style.animation = 'spin 1s linear infinite';
+                
+                const response = await fetch(`${API_BASE_URL}/api/admin/requests`);
+                const result = await response.json();
+                
+                if (response.ok) {
+                    allRequests = result.requests;
+                    filteredRequests = [...allRequests];
+                    updateDashboardStats();
+                    renderRequestsTable();
+                } else {
+                    throw new Error(result.message || 'Failed to load requests');
+                }
+            } catch (error) {
+                console.error('Error loading requests:', error);
+                document.getElementById('requestsTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="8" class="no-data">Failed to load requests: ${error.message}</td>
+                    </tr>
+                `;
+            } finally {
+                document.getElementById('refreshIcon').style.animation = '';
+            }
+        }
+
+        // Update dashboard statistics
+        function updateDashboardStats() {
+            const stats = {
+                total: allRequests.length,
+                pending: allRequests.filter(r => r.status === 'pending').length,
+                processing: allRequests.filter(r => r.status === 'processing').length,
+                completed: allRequests.filter(r => r.status === 'completed').length
+            };
+
+            document.getElementById('totalRequests').textContent = stats.total;
+            document.getElementById('pendingRequests').textContent = stats.pending;
+            document.getElementById('processingRequests').textContent = stats.processing;
+            document.getElementById('completedRequests').textContent = stats.completed;
+        }
+
+        // Render requests table
+        function renderRequestsTable() {
+            const tbody = document.getElementById('requestsTableBody');
+            
+            if (filteredRequests.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="no-data">No requests found</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filteredRequests.map(request => `
+                <tr>
+                    <td><code>${request.id.substr(0, 8)}...</code></td>
+                    <td>${request.fullName}</td>
+                    <td>${request.billType.toUpperCase()}</td>
+                    <td>${request.provider}</td>
+                    <td>₺${request.totalAmount.toFixed(2)}</td>
+                    <td><span class="status-badge status-${request.status}">${request.status}</span></td>
+                    <td>${new Date(request.createdAt).toLocaleDateString()}</td>
+                    <td>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary" onclick="viewRequestDetails('${request.id}')">View</button>
+                            <button class="btn btn-success" onclick="openUpdateStatusModal('${request.id}')">Update</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Filter requests based on selected criteria
+        function filterRequests() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const billTypeFilter = document.getElementById('billTypeFilter').value;
+
+            filteredRequests = allRequests.filter(request => {
+                const matchesStatus = !statusFilter || request.status === statusFilter;
+                const matchesBillType = !billTypeFilter || request.billType === billTypeFilter;
+                return matchesStatus && matchesBillType;
+            });
+
+            renderRequestsTable();
+        }
+
+        // Open update status modal
+        function openUpdateStatusModal(requestId) {
+            const request = allRequests.find(r => r.id === requestId);
+            if (!request) return;
+
+            document.getElementById('requestId').value = requestId;
+            document.getElementById('newStatus').value = request.status;
+            document.getElementById('receiptUrl').value = request.receiptUrl || '';
+            document.getElementById('notes').value = '';
+
+            document.getElementById('updateStatusModal').style.display = 'flex';
+        }
+
+        // Update request status
+        async function updateRequestStatus() {
+            try {
+                const form = document.getElementById('updateStatusForm');
+                const formData = new FormData(form);
+                const requestId = formData.get('requestId');
+                const newStatus = formData.get('newStatus');
+                const receiptUrl = formData.get('receiptUrl');
+
+                if (!newStatus) {
+                    alert('Please select a status');
+                    return;
+                }
+
+                const response = await fetch(`${API_BASE_URL}/api/admin/requests/${requestId}/status`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify
