@@ -39,12 +39,13 @@ const logger = winston.createLogger({
 });
 
 // MongoDB connection
-mongoose.connect(process.env.DATABASE_URL || 'mongodb://localhost:27017/payease', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-.then(() => logger.info('Connected to MongoDB'))
-.catch(err => logger.error('MongoDB connection error:', err));
+console.log('MongoDB URL:', process.env.MONGO_URI);
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => logger.info('Connected to MongoDB'))
+  .catch(err => logger.error('MongoDB connection error:', err));
+
+
+
 
 // MongoDB Schemas
 const BillRequestSchema = new mongoose.Schema({
@@ -109,7 +110,7 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-        mongoUrl: process.env.DATABASE_URL || 'mongodb://localhost:27017/payease',
+        mongoUrl: process.env.MONGO_URI,
         touchAfter: 24 * 3600 // lazy session update
     }),
     cookie: {
@@ -145,7 +146,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Email configuration
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: process.env.EMAIL_USER,
