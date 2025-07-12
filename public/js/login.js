@@ -1,3 +1,4 @@
+// public/js/login.js
 const API_BASE_URL = window.location.origin;
 
 // Handle user type selection
@@ -35,7 +36,7 @@ async function handleLogin(e) {
             showAlert('Admin login successful! Redirecting...', 'success');
             
             setTimeout(() => {
-                window.location.href = '/admin.html';
+                window.location.href = '/admin/admin.html';
             }, 1500);
             return;
         }
@@ -54,7 +55,7 @@ async function handleLogin(e) {
             showAlert('Login successful! Redirecting...', 'success');
             
             setTimeout(() => {
-                window.location.href = '/index.html';
+                window.location.href = '/UserDashboard.html';
             }, 1500);
             return;
         }

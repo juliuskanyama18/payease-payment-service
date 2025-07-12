@@ -1,5 +1,5 @@
 // File: /models/User.js
-//Standard users
+// Standard users
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
@@ -12,4 +12,5 @@ const UserSchema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('User', UserSchema);
+// Check if model already exists before compiling
+module.exports = mongoose.models.User || mongoose.model('User', UserSchema);

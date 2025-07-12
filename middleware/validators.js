@@ -1,27 +1,53 @@
 // middleware/validators.js
-// This file contains validation middleware for user and admin login, as well as bill request submissions.
-// It uses express-validator to ensure that the input data meets the required criteria before processing.
-const { body } = require('express-validator');
-
-const validateUserLogin = [
-  body('email').isEmail().normalizeEmail().withMessage('Valid email required'),
-  body('password').isLength({ min: 6 }).withMessage('Password min 6 chars')
-];
-
-const validateAdminLogin = [
-  body('username').notEmpty().withMessage('Username required'),
-  body('password').isLength({ min: 6 }).withMessage('Password min 6 chars')
-];
+const { body, validationResult } = require('express-validator');
 
 const validateBillRequest = [
-  body('fullName').trim().isLength({ min: 2 }),
-  body('email').isEmail().normalizeEmail(),
-  body('billType').isIn(['electric', 'water', 'internet']),
-  body('billAmount').isFloat({ min: 0.01 }),
-  body('provider').notEmpty(),
-  body('accountNumber').notEmpty(),
-  body('dueDate').isISO8601(),
-  body('paymentMethod').isIn(['bank', 'crypto', 'mobile', 'other'])
+  body('billType')
+    .isIn(['electric', 'water', 'internet'])
+    .withMessage('Bill type must be electric, water, or internet'),
+  
+  body('billAmount')
+    .isFloat({ min: 0.01 })
+    .withMessage('Bill amount must be a positive number'),
+  
+  body('provider')
+    .isLength({ min: 1, max: 100 })
+    .withMessage('Provider name is required and must be less than 100 characters'),
+  
+  body('accountNumber')
+    .isLength({ min: 1, max: 50 })
+    .withMessage('Account number is required and must be less than 50 characters'),
+  
+  body('dueDate')
+    .isISO8601()
+    .withMessage('Due date must be a valid date'),
+  
+  body('paymentMethod')
+    .isIn(['bank', 'crypto', 'mobile', 'other'])
+    .withMessage('Payment method must be bank, crypto, mobile, or other'),
+  
+  body('serviceFee')
+    .isFloat({ min: 0 })
+    .withMessage('Service fee must be a non-negative number'),
+  
+  body('totalAmount')
+    .isFloat({ min: 0.01 })
+    .withMessage('Total amount must be a positive number'),
+
+  // Middleware to check validation results
+  (req, res, next) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation errors',
+        errors: errors.array()
+      });
+    }
+    next();
+  }
 ];
 
-module.exports = { validateUserLogin, validateAdminLogin, validateBillRequest };
+module.exports = {
+  validateBillRequest
+};

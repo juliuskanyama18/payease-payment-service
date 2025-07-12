@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PayEase - My Dashboard</title>
+    <link rel="stylesheet" href="./css/user-dashboard.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">PayEase</div>
+                <div class="user-info">
+                    <span>Welcome, <span id="userName">User</span></span>
+                    <button id="logout-btn" class="btn btn-primary">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <!-- Quick Actions -->
+            <div class="quick-actions">
+                <h2>Quick Actions</h2>
+                <div class="action-cards">
+                    <div class="action-card" onclick="showNewBillForm()">
+                        <div class="action-icon">💳</div>
+                        <h3>Pay New Bill</h3>
+                        <p>Submit a new bill payment request</p>
+                    </div>
+                    <div class="action-card" onclick="showMyBills()">
+                        <div class="action-icon">📄</div>
+                        <h3>My Bills</h3>
+                        <p>View all your payment requests</p>
+                    </div>
+                    <div class="action-card" onclick="showProfile()">
+                        <div class="action-icon">👤</div>
+                        <h3>Profile</h3>
+                        <p>Manage your account settings</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalBills">-</div>
+                    <div class="stat-label">Total Bills</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pendingBills">-</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedBills">-</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSpent">₺0</div>
+                    <div class="stat-label">Total Spent</div>
+                </div>
+            </div>
+
+            <!-- Recent Bills -->
+            <div class="recent-bills">
+                <div class="section-header">
+                    <h2>Recent Bills</h2>
+                    <button class="btn btn-secondary" onclick="loadUserBills()">
+                        <span id="refreshIcon">🔄</span> Refresh
+                    </button>
+                </div>
+                
+                <div class="bills-container">
+                    <div class="bills-grid" id="billsGrid">
+                        <div class="loading-message">Loading your bills...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- New Bill Payment Modal -->
+    <div id="newBillModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pay New Bill</h3>
+                <button class="close-modal" onclick="closeModal('newBillModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="billSubmissionAlert"></div>
+                <form class="bill-form" id="billPaymentForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="billType">Bill Type *</label>
+                            <select id="billType" name="billType" required>
+                                <option value="">Select Bill Type</option>
+                                <option value="electric">⚡ Electric Bill</option>
+                                <option value="water">💧 Water Bill</option>
+                                <option value="internet">🌐 Internet Bill</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="billAmount">Bill Amount (₺) *</label>
+                            <input type="number" id="billAmount" name="billAmount" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="provider">Service Provider *</label>
+                        <input type="text" id="provider" name="provider" placeholder="e.g., City Electric Company, Fiber Internet Inc." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="accountNumber">Account Number *</label>
+                        <input type="text" id="accountNumber" name="accountNumber" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="dueDate">Due Date *</label>
+                            <input type="date" id="dueDate" name="dueDate" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="paymentMethod">Your Payment Method *</label>
+                            <select id="paymentMethod" name="paymentMethod" required>
+                                <option value="">How will you pay us?</option>
+                                <option value="bank">🏦 Bank Transfer</option>
+                                <option value="crypto">₿ Cryptocurrency</option>
+                                <option value="mobile">📱 Mobile Money</option>
+                                <option value="other">💳 Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="total-display" id="totalDisplay">
+                        <div class="total-breakdown">
+                            <span>Bill Amount: ₺<span id="billAmountDisplay">0.00</span></span>
+                            <span>Service Fee: ₺<span id="serviceFeeDisplay">150.00</span></span>
+                            <span class="total-amount">Total to Pay: ₺<span id="totalAmountDisplay">150.00</span></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="submitBillPayment()">Submit Payment Request</button>
+                <button class="btn" onclick="closeModal('newBillModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bill Details Modal -->
+    <div id="billDetailsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Bill Details</h3>
+                <button class="close-modal" onclick="closeModal('billDetailsModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="billDetailsBody">
+                <!-- Details will be loaded here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeModal('billDetailsModal')">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>My Profile</h3>
+                <button class="close-modal" onclick="closeModal('profileModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="profileAlert"></div>
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label for="profileName">Full Name</label>
+                        <input type="text" id="profileName" name="fullName" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" name="email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" id="currentPassword" name="currentPassword">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newPassword">New Password (optional)</label>
+                        <input type="password" id="newPassword" name="newPassword">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="updateProfile()">Update Profile</button>
+                <button class="btn" onclick="closeModal('profileModal')">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/userDasboard.js"></script>
+</body>
+</html>

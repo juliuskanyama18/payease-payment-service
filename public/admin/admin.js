@@ -1,3 +1,4 @@
+//public/admin/admin.js
 const API_BASE_URL = window.location.origin;
         let allRequests = [];
         let filteredRequests = [];
@@ -5,6 +6,11 @@ const API_BASE_URL = window.location.origin;
         // Load requests on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadRequests();
+
+            const adminlogoutbtn = document.getElementById('logout-btn');
+            if (adminlogoutbtn) {
+                adminlogoutbtn.addEventListener('click', logout);
+            }
             // Auto-refresh every 30 seconds
             setInterval(loadRequests, 30000);
         });
@@ -232,12 +238,31 @@ const API_BASE_URL = window.location.origin;
         }
 
         // Logout function
-        function logout() {
-            if (confirm('Are you sure you want to logout?')) {
-                // In a real app, this would clear session/tokens
-                window.location.href = '/';
+        async function logout() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/logout`, {
+                    method: 'POST',
+                    credentials: 'include' // important to send session cookie
+                });
+
+                const result = await response.json();
+
+                if (response.ok && result.success) {
+                    // Clear client-side storage (optional)
+                    localStorage.removeItem('payease_token');
+                    localStorage.removeItem('payease_user');
+
+                    // Redirect to login or homepage
+                    window.location.href = '/login.html';
+                } else {
+                    alert('Logout failed: ' + (result.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Logout error:', error);
+                alert('An error occurred while logging out.');
             }
         }
+
 
         // Close modal when clicking outside
         window.onclick = function(event) {

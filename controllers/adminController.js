@@ -16,7 +16,8 @@ exports.loginAdmin = async (req, res) => {
     }
 
     const { username, password } = req.body;
-    const admin = await AdminUser.findOne({ username, isActive: true });
+    //const admin = await AdminUser.findOne({ username, isActive: true });
+    const admin = await AdminUser.findOne({ email: username, isActive: true });
     if (!admin || !(await bcrypt.compare(password, admin.password))) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }

@@ -4,9 +4,9 @@ const { body } = require('express-validator');
 const adminController = require('../controllers/adminController');
 const { adminAuth } = require('../middleware/auth');
 
-
 const router = express.Router();
 
+// Public Routes (no authentication needed)
 // Admin Login
 router.post(
   '/login',
@@ -20,11 +20,9 @@ router.post(
 // Admin Logout
 router.post('/logout', adminController.logoutAdmin);
 
-// Protected Routes
-router.use(adminAuth);
-
-router.get('/requests', adminController.getAllRequests);
-router.put('/requests/:requestId/status', adminController.updateRequestStatus);
-router.get('/stats', adminController.getStats);
+// Protected Routes (authentication required)
+router.get('/requests', adminAuth, adminController.getAllRequests);
+router.put('/requests/:requestId/status', adminAuth, adminController.updateRequestStatus);
+router.get('/stats', adminAuth, adminController.getStats);
 
 module.exports = router;
