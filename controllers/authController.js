@@ -6,6 +6,8 @@ const { validationResult } = require('express-validator');
 const User = require('../models/user');
 const AdminUser = require('../models/AdminUser');
 const logger = require('../config/logger');
+const crypto = require('crypto');
+const { sendEmail } = require('../utils/email');
 
 exports.loginUser = async (req, res) => {
   try {
@@ -105,4 +107,52 @@ exports.logout = (req, res) => {
     }
     res.json({ success: true, message: 'Logout successful' });
   });
+};
+
+
+
+// Step 1: Send Reset Link
+exports.forgotPassword = async (req, res) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(400).json({ success: false, message: 'No account found with that email' });
+  }
+
+  const token = crypto.randomBytes(32).toString('hex');
+  const tokenExpiry = Date.now() + 3600000; // 1 hour
+
+  user.resetToken = token;
+  user.resetTokenExpiry = tokenExpiry;
+  await user.save();
+
+  const resetUrl = `${req.protocol}://${req.get('host')}/reset-password.html?token=${token}`;
+  await sendEmail({
+    to: email,
+    subject: 'PayEase Password Reset',
+    html: `<p>Click the link below to reset your password:</p><a href="${resetUrl}">${resetUrl}</a>`
+  });
+
+  res.json({ success: true, message: 'Password reset link sent to your email.' });
+};
+
+// Step 2: Handle Password Reset Submission
+exports.resetPassword = async (req, res) => {
+  const { token, password } = req.body;
+  const user = await User.findOne({
+    resetToken: token,
+    resetTokenExpiry: { $gt: Date.now() }
+  });
+
+  if (!user) {
+    return res.status(400).json({ success: false, message: 'Invalid or expired token.' });
+  }
+
+  user.password = await bcrypt.hash(password, 12);
+  user.resetToken = undefined;
+  user.resetTokenExpiry = undefined;
+  await user.save();
+
+  res.json({ success: true, message: 'Password has been reset successfully.' });
 };

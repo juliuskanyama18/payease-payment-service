@@ -9,7 +9,10 @@ const UserSchema = new mongoose.Schema({
     role: { type: String, default: 'user' },
     isActive: { type: Boolean, default: true },
     lastLogin: { type: Date },
-    createdAt: { type: Date, default: Date.now }
+    createdAt: { type: Date, default: Date.now },
+    resetToken: { type: String },
+    resetTokenExpiry: { type: Date }
+
 });
 
 // Check if model already exists before compiling

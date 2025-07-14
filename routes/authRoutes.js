@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const { body } = require('express-validator');
 const sanitizeInput = require('../middleware/sanitize');
+const { forgotPassword, resetPassword } = require('../controllers/authController');
 
 // Import user auth from authController
 const {
@@ -38,6 +39,8 @@ const validateUserRegister = [
 router.post('/login', validateUserLogin, sanitizeInput, loginUser);
 router.post('/register', validateUserRegister, sanitizeInput, registerUser);
 router.post('/logout', logout);
+router.post('/forgot-password', sanitizeInput, forgotPassword);
+router.post('/reset-password', sanitizeInput, resetPassword);
 
 // Admin auth routes
 router.post('/admin/login', validateAdminLogin, sanitizeInput, loginAdmin);
