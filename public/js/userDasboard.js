@@ -11,6 +11,41 @@ document.addEventListener('DOMContentLoaded', function() {
     if (logoutBtn) {
         logoutBtn.addEventListener('click', logout);
     }
+    // Setup quick action for "Pay New Bill"
+    const newBillBtn = document.getElementById('paynewbill-icon');
+    if (newBillBtn) {
+        newBillBtn.addEventListener('click', showNewBillForm);
+    }
+    // Setup quick action for submit bill payment button
+    const submitBillPaymentBtn = document.getElementById('submitBillPaymentBtn');
+    if (submitBillPaymentBtn) {
+        submitBillPaymentBtn.addEventListener('click', submitBillPayment);
+    }
+
+    // Setup quick action for "My Bills"
+    const myBillsBtn = document.getElementById('mybills-icon');
+    if (myBillsBtn) {
+        myBillsBtn.addEventListener('click', showMyBills);
+    }
+
+    // Setup quick action for "Profile"
+    const profileBtn = document.getElementById('profile-icon');
+    if (profileBtn) {
+        profileBtn.addEventListener('click', showProfile);
+    }
+    // Setup event listener for update profile button
+    const updateProfileBtn = document.getElementById('updateProfileBtn');
+    if (updateProfileBtn) {
+        updateProfileBtn.addEventListener('click', updateProfile);
+    }
+
+    document.querySelectorAll('.close-modal, .close-modal-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const modalId = btn.getAttribute('data-target');
+            closeModal(modalId);
+        });
+    });
+
     
     // Auto-refresh every 30 seconds
     setInterval(loadUserBills, 30000);
@@ -288,25 +323,37 @@ function updateTotalDisplay() {
 async function submitBillPayment() {
     const form = document.getElementById('billPaymentForm');
     const formData = new FormData(form);
-    
+    const submitBtn = document.getElementById('submitBillBtn');
+
     // Validate form
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
     }
-    
+
+    // Parse bill amount safely
+    const billAmount = parseFloat(formData.get('billAmount')) || 0;
+    const serviceFee = 150.00;
+
     const billData = {
         billType: formData.get('billType'),
-        billAmount: parseFloat(formData.get('billAmount')),
-        provider: formData.get('provider'),
-        accountNumber: formData.get('accountNumber'),
+        billAmount,
+        provider: formData.get('provider').trim(),
+        accountNumber: formData.get('accountNumber').trim(),
         dueDate: formData.get('dueDate'),
         paymentMethod: formData.get('paymentMethod'),
-        serviceFee: 150.00,
-        totalAmount: parseFloat(formData.get('billAmount')) + 150.00
+        serviceFee,
+        totalAmount: billAmount + serviceFee
     };
-    
+
     try {
+        // Disable submit button & show loading
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            var originalText = submitBtn.textContent;
+            submitBtn.innerHTML = `<span class="spinner"></span> Submitting...`;
+        }
+
         const token = localStorage.getItem('payease_token');
         const response = await fetch(`${API_BASE_URL}/api/user/bills`, {
             method: 'POST',
@@ -316,26 +363,30 @@ async function submitBillPayment() {
             },
             body: JSON.stringify(billData)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok && result.success) {
             document.getElementById('billSubmissionAlert').innerHTML = `
                 <div class="alert alert-success">
                     Bill payment request submitted successfully! Reference: ${result.bill.id}
                 </div>
             `;
-            
-            // Reload bills after 2 seconds
+
+            // Reset form and UI
+            form.reset();
+            updateTotalDisplay();
+
+            // Reload bills and close modal
             setTimeout(() => {
                 loadUserBills();
                 closeModal('newBillModal');
             }, 2000);
-            
+
         } else {
             throw new Error(result.message || 'Failed to submit bill payment');
         }
-        
+
     } catch (error) {
         console.error('Error submitting bill payment:', error);
         document.getElementById('billSubmissionAlert').innerHTML = `
@@ -343,29 +394,50 @@ async function submitBillPayment() {
                 ${error.message || 'Failed to submit bill payment. Please try again.'}
             </div>
         `;
+    } finally {
+        // Re-enable button & restore text
+        if (submitBtn) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText || 'Submit Payment';
+        }
     }
 }
+
 
 // Update profile
 async function updateProfile() {
     const form = document.getElementById('profileForm');
     const formData = new FormData(form);
-    
+    const updateBtn = document.getElementById('updateProfileBtn');
+
     // Validate form
     if (!form.checkValidity()) {
         form.reportValidity();
         return;
     }
-    
+
     const profileData = {
         fullName: formData.get('fullName'),
         email: formData.get('email')
     };
-    
-    // Add password if provided
+
     const currentPassword = formData.get('currentPassword');
     const newPassword = formData.get('newPassword');
-    
+
+    // ✅ Skip update if nothing changed
+    if (
+        profileData.fullName === currentUser.fullName &&
+        profileData.email === currentUser.email &&
+        !newPassword
+    ) {
+        document.getElementById('profileAlert').innerHTML = `
+            <div class="alert alert-info">
+                No changes detected to update.
+            </div>
+        `;
+        return;
+    }
+
     if (newPassword) {
         if (!currentPassword) {
             document.getElementById('profileAlert').innerHTML = `
@@ -378,8 +450,13 @@ async function updateProfile() {
         profileData.currentPassword = currentPassword;
         profileData.newPassword = newPassword;
     }
-    
+
     try {
+        // ✅ Disable button + show loading
+        updateBtn.disabled = true;
+        const originalText = updateBtn.textContent;
+        updateBtn.innerHTML = `<span class="spinner"></span> Updating...`;
+
         const token = localStorage.getItem('payease_token');
         const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
             method: 'PUT',
@@ -389,31 +466,27 @@ async function updateProfile() {
             },
             body: JSON.stringify(profileData)
         });
-        
+
         const result = await response.json();
-        
+
         if (response.ok && result.success) {
-            // Update stored user data
             currentUser = { ...currentUser, ...result.user };
             localStorage.setItem('payease_user', JSON.stringify(currentUser));
-            
-            // Update UI
             document.getElementById('userName').textContent = currentUser.fullName || 'User';
-            
+
             document.getElementById('profileAlert').innerHTML = `
                 <div class="alert alert-success">
                     Profile updated successfully!
                 </div>
             `;
-            
-            // Clear password fields
+
             document.getElementById('currentPassword').value = '';
             document.getElementById('newPassword').value = '';
-            
+
         } else {
             throw new Error(result.message || 'Failed to update profile');
         }
-        
+
     } catch (error) {
         console.error('Error updating profile:', error);
         document.getElementById('profileAlert').innerHTML = `
@@ -421,8 +494,13 @@ async function updateProfile() {
                 ${error.message || 'Failed to update profile. Please try again.'}
             </div>
         `;
+    } finally {
+        // ✅ Re-enable button + restore text
+        updateBtn.disabled = false;
+        updateBtn.textContent = 'Update Profile';
     }
 }
+
 
 // Close modal
 function closeModal(modalId) {

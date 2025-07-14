@@ -25,17 +25,17 @@
             <div class="quick-actions">
                 <h2>Quick Actions</h2>
                 <div class="action-cards">
-                    <div class="action-card" onclick="showNewBillForm()">
+                    <div id="paynewbill-icon" class="action-card">
                         <div class="action-icon">💳</div>
                         <h3>Pay New Bill</h3>
                         <p>Submit a new bill payment request</p>
                     </div>
-                    <div class="action-card" onclick="showMyBills()">
+                    <div id="mybills-icon" class="action-card">
                         <div class="action-icon">📄</div>
                         <h3>My Bills</h3>
                         <p>View all your payment requests</p>
                     </div>
-                    <div class="action-card" onclick="showProfile()">
+                    <div id="profile-icon" class="action-card">
                         <div class="action-icon">👤</div>
                         <h3>Profile</h3>
                         <p>Manage your account settings</p>
@@ -86,7 +86,9 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Pay New Bill</h3>
-                <button class="close-modal" onclick="closeModal('newBillModal')">&times;</button>
+                <!-- <button class="close-modal" onclick="closeModal('newBillModal')">&times;</button> -->
+                <button class="close-modal" data-target="newBillModal">&times;</button>
+
             </div>
             <div class="modal-body">
                 <div id="billSubmissionAlert"></div>
@@ -146,8 +148,9 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="submitBillPayment()">Submit Payment Request</button>
-                <button class="btn" onclick="closeModal('newBillModal')">Cancel</button>
+                <button id="submitBillPaymentBtn" class="btn btn-primary">Submit Payment Request</button>
+                <!-- <button class="btn" onclick="closeModal('newBillModal')">Cancel</button> -->
+                <button class="btn close-modal-btn" data-target="newBillModal">Cancel</button>
             </div>
         </div>
     </div>
@@ -173,7 +176,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>My Profile</h3>
-                <button class="close-modal" onclick="closeModal('profileModal')">&times;</button>
+                <button class="close-modal" data-target="profileModal">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="profileAlert"></div>
@@ -200,8 +203,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="updateProfile()">Update Profile</button>
-                <button class="btn" onclick="closeModal('profileModal')">Cancel</button>
+                <button id="updateProfileBtn" class="btn btn-primary">Update Profile</button>
+                <button class="btn close-modal-btn" data-target="profileModal">Cancel</button>
             </div>
         </div>
     </div>
