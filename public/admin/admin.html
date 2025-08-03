@@ -43,7 +43,7 @@
             <div class="requests-section">
                 <div class="section-header">
                     <h2 class="section-title">Payment Requests</h2>
-                    <button class="refresh-btn" onclick="loadRequests()">
+                    <button id="refresh-btn" class="refresh-btn">
                         <span id="refreshIcon">🔄</span> Refresh
                     </button>
                 </div>
@@ -51,7 +51,7 @@
                 <div class="filters">
                     <div class="filter-group">
                         <label for="statusFilter">Status:</label>
-                        <select id="statusFilter" onchange="filterRequests()">
+                        <select id="statusFilter">
                             <option value="">All Statuses</option>
                             <option value="pending">Pending</option>
                             <option value="processing">Processing</option>
@@ -61,7 +61,7 @@
                     </div>
                     <div class="filter-group">
                         <label for="billTypeFilter">Bill Type:</label>
-                        <select id="billTypeFilter" onchange="filterRequests()">
+                        <select id="billTypeFilter">
                             <option value="">All Types</option>
                             <option value="electric">Electric</option>
                             <option value="water">Water</option>
@@ -100,7 +100,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Update Request Status</h3>
-                <button class="close-modal" onclick="closeModal('updateStatusModal')">&times;</button>
+                <button class="close-modal" data-target="updateStatusModal">&times;</button>
             </div>
             <div class="modal-body">
                 <div id="statusUpdateAlert"></div>
@@ -130,8 +130,8 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="updateRequestStatus()">Update Status</button>
-                <button class="btn" onclick="closeModal('updateStatusModal')">Cancel</button>
+                <button id="updateStatusBtn" class="btn btn-primary">Update Status</button>
+                <button class="btn close-modal-btn" data-target="updateStatusModal">Cancel</button>
             </div>
         </div>
     </div>
@@ -141,13 +141,13 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Request Details</h3>
-                <button class="close-modal" onclick="closeModal('viewDetailsModal')">&times;</button>
+                <button class="close-modal" data-target="viewDetailsModal">&times;</button>
             </div>
             <div class="modal-body" id="requestDetailsBody">
                 <!-- Details will be loaded here -->
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" onclick="closeModal('viewDetailsModal')">Close</button>
+                <button class="btn btn-primary close-modal-btn" data-target="viewDetailsModal">Close</button>
             </div>
         </div>
     </div>

@@ -38,13 +38,25 @@ document.addEventListener('DOMContentLoaded', function() {
     if (updateProfileBtn) {
         updateProfileBtn.addEventListener('click', updateProfile);
     }
-
+    // Setup event listener for close modals
     document.querySelectorAll('.close-modal, .close-modal-btn').forEach(btn => {
         btn.addEventListener('click', function () {
             const modalId = btn.getAttribute('data-target');
             closeModal(modalId);
         });
     });
+
+    // Setup event listener for user bill button
+    const refreshbtn = document.getElementById('refreshbtn');
+    if (refreshbtn) {
+        refreshbtn.addEventListener('click', function () {
+            console.log('Refresh button clicked');
+            loadUserBills(); // call the function
+        });
+    } else {
+        console.error('Refresh button not found');
+    }
+    
 
     
     // Auto-refresh every 30 seconds
@@ -188,7 +200,7 @@ function renderBillsGrid() {
     const sortedBills = [...userBills].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     
     billsGrid.innerHTML = sortedBills.map(bill => `
-        <div class="bill-card" onclick="viewBillDetails('${bill.id}')">
+        <div class="bill-card" data-id="${bill.id}">
             <div class="bill-header">
                 <div class="bill-type">
                     ${getBillTypeIcon(bill.billType)} ${bill.billType.toUpperCase()}
@@ -205,6 +217,13 @@ function renderBillsGrid() {
             </div>
         </div>
     `).join('');
+    // ✅ Add this block to bind clicks after rendering
+    document.querySelectorAll('.bill-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const billId = card.dataset.id;
+            viewBillDetails(billId);
+        });
+    });
 }
 
 // Get bill type icon

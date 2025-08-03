@@ -11,8 +11,34 @@ const API_BASE_URL = window.location.origin;
             if (adminlogoutbtn) {
                 adminlogoutbtn.addEventListener('click', logout);
             }
+
+            // Setup event listener for user bill button
+            document.addEventListener('click', (event) => {
+                if (event.target.id === 'refresh-btn') {
+                    loadRequests(); // or the function you want to run
+                    console.log('Refresh button clicked');
+                }
+            });
+
+            // Setup event listener for close modals
+            document.querySelectorAll('.close-modal, .close-modal-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                const modalId = btn.getAttribute('data-target');
+                closeModal(modalId);
+                });
+            });
+
+            const updateBtn = document.getElementById('updateStatusBtn');
+            if (updateBtn) {
+                updateBtn.addEventListener('click', updateRequestStatus);
+            }
+
+
             // Auto-refresh every 30 seconds
             setInterval(loadRequests, 30000);
+
+            document.getElementById('statusFilter').addEventListener('change', filterRequests);
+            document.getElementById('billTypeFilter').addEventListener('change', filterRequests);
         });
 
         // Load all requests from API
@@ -83,12 +109,29 @@ const API_BASE_URL = window.location.origin;
                     <td>${new Date(request.createdAt).toLocaleDateString()}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn btn-primary" onclick="viewRequestDetails('${request.id}')">View</button>
-                            <button class="btn btn-success" onclick="openUpdateStatusModal('${request.id}')">Update</button>
+                            
+                            <button class="btn btn-primary" data-id="${request.id}">View</button>
+                            <button class="btn btn-success" data-id="${request.id}">Update</button>
                         </div>
                     </td>
                 </tr>
             `).join('');
+            
+            // ✅ Add event listeners to view buttons
+            document.querySelectorAll('.btn-primary').forEach(view => {
+                view.addEventListener('click', () => {
+                    const requestId = view.dataset.id;
+                    viewRequestDetails(requestId);
+                });
+            });
+
+            // ✅ Add event listeners to update buttons
+            document.querySelectorAll('.btn-success').forEach(update => {
+                update.addEventListener('click', () => {
+                    const requestId = update.closest('tr').querySelector('.btn-primary').dataset.id;
+                    openUpdateStatusModal(requestId);
+                });
+            });
         }
 
         // Filter requests based on selected criteria
